@@ -1,5 +1,4 @@
 import express from "express";
-import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import fileUpload from "express-fileupload";
 import cors from "cors";
@@ -13,7 +12,8 @@ import softwareApplicationRouter from "./routes/softwareApplicationRouter.js";
 import projectRouter from "./routes/projectRouter.js";
 
 const app = express();
-dotenv.config({ path: "./config/config.env" });
+
+// ✅ dotenv is now handled in server.js — removed from here
 
 app.use(
   cors({
@@ -30,7 +30,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(
   fileUpload({
     useTempFiles: true,
-    tempFileDir: "/tmp/",
+    tempFileDir: "./tmp/", // ✅ Changed from /tmp/ to local ./tmp/ to avoid permission issues
   })
 );
 

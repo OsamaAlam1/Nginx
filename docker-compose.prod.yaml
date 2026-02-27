@@ -1,0 +1,70 @@
+version: "3.8"
+
+services:
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_DB_NAME}
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - app-network
+
+  backend:
+    image: backend:latest
+    container_name: backend
+    restart: always
+    environment:
+      PORT: 5000
+      MONGO_URI: mongodb://${MONGO_ROOT_USER}:${MONGO_ROOT_PASSWORD}@mongodb:27017/${MONGO_DB_NAME}?authSource=admin
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      JWT_EXPIRES: ${JWT_EXPIRES}
+      COOKIE_EXPIRE: ${COOKIE_EXPIRE}
+      CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME}
+      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY}
+      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET}
+      SMTP_SERVICE: ${SMTP_SERVICE}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_MAIL: ${SMTP_MAIL}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      PORTFOLIO_URL: http://${DOMAIN}
+      DASHBOARD_URL: http://${DOMAIN}:3001
+    depends_on:
+      - mongodb
+    networks:
+      - app-network
+
+  portfolio:
+    image: portfolio:latest
+    container_name: portfolio
+    restart: always
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+  dashboard:
+    image: dashboard:latest
+    container_name: dashboard
+    restart: always
+    ports:
+      - "3001:80"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+volumes:
+  mongo-data:
+
+networks:
+  app-network:
+    driver: bridge

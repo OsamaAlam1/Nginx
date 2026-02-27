@@ -1,4 +1,9 @@
-import app from "./app.js";
+// server.js
+import dotenv from "dotenv";
+dotenv.config({ path: "./config/config.env" });
+
+// ✅ Use dynamic import AFTER dotenv loads
+const { default: app } = await import("./app.js");
 import cloudinary from "cloudinary";
 
 cloudinary.v2.config({
